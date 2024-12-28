@@ -1,0 +1,28 @@
+CREATE TABLE discounts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(50) UNIQUE NOT NULL,
+    description TEXT,
+    type ENUM('fixed', 'percentage') NOT NULL,
+    value DECIMAL(10, 2) NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    max_uses INT DEFAULT 0,
+    uses INT DEFAULT 0 -- Added the `uses` column to track how many times the discount is used
+);
+CREATE TABLE promotions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    type ENUM('fixed', 'percentage') NOT NULL,
+    value DECIMAL(10, 2) NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL
+);
+CREATE TABLE feedback (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    order_id INT NOT NULL,
+    rating TINYINT NOT NULL CHECK (rating BETWEEN 1 AND 5), -- Added a check constraint for valid rating range
+    comment TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  );

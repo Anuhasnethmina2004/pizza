@@ -7,6 +7,14 @@
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <style>
         /* General Reset */
+        .swal-modal {
+  font-family: sans-serif;
+}
+
+.swal-text {
+  text-align: center;
+}
+
         * {
             margin: 0;
             padding: 0;
@@ -57,20 +65,12 @@
         }
 
         .nav-links a:hover,
-        .nav-links form button:hover {
+        /* .nav-links form button:hover {
             background-color: #f8b400;
             color: #121212;
-        }
+        } */
 
-        .btn-primary {
-            background-color: #d9534f;
-            color: #fff;
-            font-weight: bold;
-        }
 
-        .btn-primary:hover {
-            background-color: #c9302c;
-        }
 
         .btnheader {
             border: none;
@@ -116,9 +116,228 @@
     </style>
 </head>
 <body>
+    <style>
+        *{
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        scroll-behavior: smooth;
+      }
+      body{
+        font-family: sans-serif;
+        background: #000;
+        color: white;
+      }
 
+
+      /*main*/
+      .logo{
+        text-align: center;
+      }
+      .lline{
+        position: absolute;
+        width: 40%;
+        top: 8vh;
+        border: 2px solid #ec953c;
+      }
+      .rline{
+        position: absolute;
+        width: 40%;
+        top: 8vh;
+        right: 0;
+        border: 2px solid #ec953c;
+      }
+      .menu{
+        text-align: center;
+        list-style: none;
+      }
+      .menu ul li{
+        display: inline-block;
+        padding: 1vh 4vh 0;
+      }
+      .menu ul li a{
+        font-size: 3vh;
+        color: white;
+        font-family: 'Quicksand';
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: ease-in-out 100ms;
+      }
+      .menu ul li a:hover{
+        color: #ec953c;
+      }
+      .menu ul li .active{
+        color: #ec953c;
+      }
+
+      .menu ul li button{
+        font-size: 3vh;
+        color: white;
+        font-family: 'Quicksand';
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: ease-in-out 100ms;
+      }
+      /* .menu ul li button:hover{
+        color: #ec953c;
+      } */
+      .menu ul li .active{
+        color: #ec953c;
+      }
+
+
+      /*FormDesign*/
+      .formDesign{
+        width: 70%;
+        margin: 0 auto;
+        border: 2px solid white;
+        border-radius: 5px;
+        display: block;
+      }
+      .formDesign h2{
+        background-color: #ec953c;
+        color: white;
+        text-align: center;
+        text-transform:uppercase;
+        padding: 4vh 0;
+        margin-bottom: 2vh;
+      }
+      #form{
+        margin-bottom: 8vh;
+      }
+      form{
+        padding: 5vh;
+      }
+      form label{
+        color: #ec953c;
+        font-size: 2.4vh;
+      }
+      form button{
+        border-radius: 5px;
+      }
+      .form-check label{
+        color: white;
+      }
+      .rpizza, .lpizza{
+        position: absolute;
+      }
+      .rpizza{
+        width: 20%;
+        margin: 9vh auto;
+        right: 5.5vh;
+      }
+      .lpizza{
+        left: 5.6vh;
+        width: 20%;
+        overflow: hidden;
+      }
+
+      /*Footer*/
+      #footer{
+        background-color: #111111;
+        bottom: 0;
+        padding: 3vh 0;
+      }
+      .footerText{
+        padding-bottom: 2vh;
+      }
+      .left{
+        float: left;
+      }
+      .right{
+        float: right;
+      }
+
+
+      /*Successful*/
+      .bg-pizza{
+        background: url('https://i.postimg.cc/1tcRYdzn/4.jpg');
+        height: 72vh;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+      .layer{
+        background-color: #ec953c5e;
+        height: 72vh;
+      }
+      .successfulBox{
+        text-transform: uppercase;
+        text-align: center;
+        font-size: 6vh;
+        width: 50%;
+        padding-top: 8vh;
+      }
+      #marginbt {
+        margin: 40px 0;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .row {
+        display: flex;
+        gap: 20px; /* Optional: Adds space between columns */
+      }
+
+      .col-6 {
+        flex: 1 1 50%; /* Ensures each column takes 50% width */
+        box-sizing: border-box;
+      }
+
+      .land-img-pos img {
+        max-width: 100%; /* Ensures the image is responsive */
+        height: auto;
+      }
+
+      .land-txt-pos h1 {
+        margin-bottom: 10px;
+      }
+
+      .land-txt-pos {
+        text-align: center;
+      }
+
+      .fbtn {
+        margin-top: 20px;
+        background-color: #ff4500;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        /* width: 200px; */
+        height: 50px;
+        display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;  width: 100%; /* Full width of the column */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+      }
+
+      .fbtn a {
+        color: white;
+        text-decoration: none;
+      }
+
+      .ebtn {
+        margin-top: 10px;
+        background-color: #ddd;
+        color: black;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+      }
+
+      </style>
     <!-- Header -->
-    <header>
+    {{-- <header>
         <nav class="navbar">
             <a href="/" class="logo">Pizza Haven</a>
             <div class="nav-links">
@@ -138,7 +357,36 @@
                 @endif
             </div>
         </nav>
-    </header>
+    </header> --}}
+
+    <span class="lline"></span>
+    <span class="rline"></span>
+    <div>
+      <div class="container">
+        <div class="logo">
+          <img src="https://i.postimg.cc/T1gVSfDj/6.png" alt="logo" width="300px" height="100px"><br>
+        </div>
+        <div class="menu">
+          <ul>
+            <li>   <a href="{{route('home')}}">Home</a></li>
+            <li><a href="{{ route('pizza.builder') }}">Order Now</a></li>
+            <li><a href="{{ route('cart.view') }}">Cart</a></li>
+            @if(!empty(auth()->id()))
+            <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                @csrf
+                <li>  <button class="btnheader" type="submit">Logout</button></li>
+            </form>
+            <li> <a href="{{ route('profile') }}">Profile</a></li>
+            @else
+            <li> <a href="/login">Login</a></li>
+                <li>  <a href="/register" class="btn-primary">Sign Up</a></li>
+            @endif
+
+           
+          </ul>
+        </div>
+      </div>
+    </div>
 
     <!-- Main Content -->
     <main>

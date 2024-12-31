@@ -36,13 +36,13 @@ class OrderController extends Controller
         $crusts = PizzaCrust::all();
         $sauces = PizzaSauce::all();
         $toppings = PizzaTopping::all();
-        return view('pizza.builder', compact('crusts', 'sauces', 'toppings'));
+        return view('pizza.pizza_customization', compact('crusts', 'sauces', 'toppings'));
     }
 
     public function addToCart(Request $request)
     {
 
-        if(empty(auth()->id())){
+        if (empty(auth()->id())) {
             return redirect()->route('login')->with('success', 'Please Login Before place order');
         }
 
@@ -54,8 +54,8 @@ class OrderController extends Controller
         ]);
 
         $price = PizzaCrust::find($validated['crust_id'])->price +
-        PizzaSauce::find($validated['sauce_id'])->price +
-        PizzaTopping::whereIn('id', $validated['topping_ids'] ?? [])->sum('price');
+            PizzaSauce::find($validated['sauce_id'])->price +
+            PizzaTopping::whereIn('id', $validated['topping_ids'] ?? [])->sum('price');
 
 
         $builder = new PizzaOrderBuilder();
@@ -106,158 +106,108 @@ class OrderController extends Controller
 
 
 
-//     public function checkout(Request $request)
-//     {
+    public function applyDiscount(Request $request)
+    {
+        $discountCode = $request->input('discount_code');
+        $discount = Discount::where('code', $discountCode)
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->first();
 
-
-//         $pizzas = PizzaOrder::where('user_id', auth()->id())->where('status', '0')->get();
-//         $totalPrice = $pizzas->sum('price');
-//         $itemCount = $pizzas->count();
-
-//         $paymentStrategy = new CreditCardPayment();
-//         $paymentDetails = [
-//             'card_number' => $request->card_number,
-//             'cvv' => $request->cvv,
-//             'expiry_date' => $request->expiry_date,
-//         ];
-
-
-//         $paymentSuccessful = $paymentStrategy->pay($totalPrice, $paymentDetails);
-
-//         if (!$paymentSuccessful) {
-//             return redirect()->back()->with('error', 'Payment failed. Please try again.');
-//         }
-
-
-//             // Build the cart
-//     $cartBuilder = new CartBuilder();
-//    $id= $cartBuilder->setUser(auth()->id())
-//         ->setName($request->name)
-//         ->setPhoneNumber($request->phone)
-//         ->setDeliveryAddress($request->address)
-//         ->setDiscounts(0)
-//         ->setLoyaltyPoints(0)
-//         ->setPrice($totalPrice)
-//         ->setStatus(1)
-//         ->setDeliveryStatus(0)
-//         ->setItemCount($itemCount)
-//         ->build();
-
-
-
-
-//         foreach ($pizzas as $pizza) {
-//             $pizza->update(['paid' => true, 'status' => '1','cart_id' => $id]);
-//         }
-
-//         return redirect()->route('pizza.builder')->with('success', 'Payment successful and checkout completed!');
-//     }
-
-
-public function applyDiscount(Request $request)
-{
-    $discountCode = $request->input('discount_code');
-    $discount = Discount::where('code', $discountCode)
-                        ->where('start_date', '<=', now())
-                        ->where('end_date', '>=', now())
-                        ->first();
-
-    if ($discount) {
-        // Check if the discount is still valid
-        if ($discount->uses < $discount->max_uses) {
-            session([
-                'discount' => [
-                    'code' => $discount->code,
-                    'value' => $discount->value,
-                ],
-            ]);
-            return redirect()->back()->with('success', 'Discount applied successfully!');
-        } else {
-            return redirect()->back()->with('error', 'This discount code has reached its usage limit.');
+        if ($discount) {
+            // Check if the discount is still valid
+            if ($discount->uses < $discount->max_uses) {
+                session([
+                    'discount' => [
+                        'code' => $discount->code,
+                        'value' => $discount->value,
+                    ],
+                ]);
+                return redirect()->back()->with('success', 'Discount applied successfully!');
+            } else {
+                return redirect()->back()->with('error', 'This discount code has reached its usage limit.');
+            }
         }
+
+        return redirect()->back()->with('error', 'Invalid or expired discount code.');
     }
 
-    return redirect()->back()->with('error', 'Invalid or expired discount code.');
-}
+    public function checkout(Request $request)
+    {
+        $pizzas = PizzaOrder::where('user_id', auth()->id())->where('status', '0')->get();
+        $totalPrice = $pizzas->sum('price');
+        $itemCount = $pizzas->count();
 
-public function checkout(Request $request)
-{
-    $pizzas = PizzaOrder::where('user_id', auth()->id())->where('status', '0')->get();
-    $totalPrice = $pizzas->sum('price');
-    $itemCount = $pizzas->count();
+        // Apply discount if available
+        $discount = session('discount');
+        if ($discount) {
+            $totalPrice -= $discount['value'];
+        }
 
-    // Apply discount if available
-    $discount = session('discount');
-    if ($discount) {
-        $totalPrice -= $discount['value'];
+        $paymentStrategy = new CreditCardPayment();
+        $paymentDetails = [
+            'card_number' => $request->card_number,
+            'cvv' => $request->cvv,
+            'expiry_date' => $request->expiry_date,
+        ];
+
+        $paymentSuccessful = $paymentStrategy->pay($totalPrice, $paymentDetails);
+        if ($request->delivery_method == 'pickup') {
+            $delstatus = 3;
+        } else {
+            $delstatus = 0;
+        }
+        if (!$paymentSuccessful) {
+            return redirect()->back()->with('error', 'Payment failed. Please try again.');
+        }
+
+        // Build the cart
+        $cartBuilder = new CartBuilder();
+        $cart = $cartBuilder->setUser(auth()->id())
+            ->setName($request->name)
+            ->setPhoneNumber($request->phone)
+            ->setDeliveryAddress($request->address)
+            ->setDiscounts($discount['value'] ?? 0)
+            ->setLoyaltyPoints(0)
+            ->setPrice($totalPrice)
+            ->setStatus(1)
+            ->setDeliveryStatus($delstatus)
+            ->setItemCount($itemCount)
+            ->build();
+
+        foreach ($pizzas as $pizza) {
+            $pizza->update(['paid' => true, 'status' => '1', 'cart_id' => $cart->id]);
+        }
+
+        // Clear the discount session after checkout
+        session()->forget('discount');
+
+        return redirect()->route('profile')->with('success', 'Payment successful and checkout completed!');
     }
 
-    $paymentStrategy = new CreditCardPayment();
-    $paymentDetails = [
-        'card_number' => $request->card_number,
-        'cvv' => $request->cvv,
-        'expiry_date' => $request->expiry_date,
-    ];
-
-    $paymentSuccessful = $paymentStrategy->pay($totalPrice, $paymentDetails);
-if($request->delivery_method=='pickup'){
-    $delstatus=3;
-}else{
-    $delstatus=0;
-}
 
 
 
-    if (!$paymentSuccessful) {
-        return redirect()->back()->with('error', 'Payment failed. Please try again.');
-    }
+//     function processOrder($order)
+// {
+//     $addItemsHandler = new AddItemsHandler();
+//     $applyDiscountHandler = new ApplyDiscountHandler();
+//     $calculateTotalHandler = new CalculateTotalHandler();
 
-    // Build the cart
-    $cartBuilder = new CartBuilder();
-    $cart = $cartBuilder->setUser(auth()->id())
-        ->setName($request->name)
-        ->setPhoneNumber($request->phone)
-        ->setDeliveryAddress($request->address)
-        ->setDiscounts($discount['value'] ?? 0)
-        ->setLoyaltyPoints(0)
-        ->setPrice($totalPrice)
-        ->setStatus(1)
-        ->setDeliveryStatus($delstatus)
-        ->setItemCount($itemCount)
-        ->build();
+//     $addItemsHandler->setNext($applyDiscountHandler)->setNext($calculateTotalHandler);
 
-    foreach ($pizzas as $pizza) {
-        $pizza->update(['paid' => true, 'status' => '1', 'cart_id' => $cart->id]);
-    }
-
-    // Clear the discount session after checkout
-    session()->forget('discount');
-
-    return redirect()->route('profile')->with('success', 'Payment successful and checkout completed!');
-}
+//     return $addItemsHandler->handle($order);
+// }
 
 
+// function BuildPlainPizza(){
+//     $pizza = new PlainPizza();
+// $pizzaWithCheese = new ExtraCheeseDecorator($pizza);
+// $pizzaWithPepperoniAndCheese = new PepperoniDecorator($pizzaWithCheese);
 
-
-
-
-
-    // public function saveFeedback(Request $request, $orderId)
-    // {
-    //     $request->validate([
-    //         'rating' => 'required|integer|min:1|max:5',
-    //         'comment' => 'nullable|string|max:500',
-    //     ]);
-
-    //     Feedback::create([
-    //         'user_id' => auth()->id(),
-    //         'order_id' => $orderId,
-    //         'rating' => $request->input('rating'),
-    //         'comment' => $request->input('comment'),
-    //     ]);
-
-    //     return back()->with('success', 'Thank you for your feedback!');
-    // }
+// echo $pizzaWithPepperoniAndCheese->getDescription(); // Plain Pizza + Extra Cheese + Pepperoni
+// echo $pizzaWithPepperoniAndCheese->cost();
+// }
 
 
 
@@ -267,4 +217,3 @@ if($request->delivery_method=='pickup'){
 
 
 }
-

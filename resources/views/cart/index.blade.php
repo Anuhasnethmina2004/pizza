@@ -42,70 +42,9 @@
                 </tbody>
             </table>
             @php
-                $loyaltyPoints=10;
+                $loyaltyPoints = 10;
             @endphp
-            {{-- <div class="cart-summary">
-                <h2 class="summary-title">Cart Summary</h2>
 
-                <div class="summary-details">
-                    <p><strong>Original Total:</strong> ${{ $totalPrice }}</p>
-                    <p><strong>Loyalty Points Applied:</strong> ${{ min($loyaltyPoints, $totalPrice) }}</p>
-
-                    @if (session('discount'))
-                        <p><strong>Discount ({{ session('discount')['code'] }}):</strong> -${{ session('discount')['value'] }}</p>
-                    @endif
-
-                    <p><strong>Total After Discount:</strong>
-                        ${{ $totalPrice - (session('discount')['value'] ?? 0) }}
-                    </p>
-                </div>
-
-                <form action="{{ route('cart.apply_discount') }}" method="POST" class="discount-form">
-                    @csrf
-                    <input type="text" name="discount_code" placeholder="Enter discount code" class="discount-input">
-                    <button type="submit" class="btn-dark">Apply</button>
-                </form>
-
-                <a href="{{ route('cart.checkout_form') }}" class="btn-dark checkout-btn">Proceed to Checkout</a>
-            </div> --}}
-            {{-- <div class="cart-summary">
-                <h2 class="summary-title">Cart Summary</h2>
-
-                <div class="summary-details">
-                    <p>
-                        <span class="summary-label"><strong>Original Total:</strong></span>
-                        <span class="summary-value">${{ $totalPrice }}</span>
-                    </p>
-                    <p>
-                        <span class="summary-label"><strong>Loyalty Points Applied:</strong></span>
-                        <span class="summary-value">
-                            ${{ min($loyaltyPoints, $totalPrice) }}
-                        </span>
-                    </p>
-
-                    @if (session('discount'))
-                        <p>
-                            <span class="summary-label"><strong>Discount ({{ session('discount')['code'] }}):</strong></span>
-                            <span class="summary-value">-${{ session('discount')['value'] }}</span>
-                        </p>
-                    @endif
-
-                    <p>
-                        <span class="summary-label"><strong>Total After Discount:</strong></span>
-                        <span class="summary-value">
-                            ${{ $totalPrice - (session('discount')['value'] ?? 0) }}
-                        </span>
-                    </p>
-                </div>
-
-                <form action="{{ route('cart.apply_discount') }}" method="POST" class="discount-form">
-                    @csrf
-                    <input type="text" name="discount_code" placeholder="Enter discount code" class="discount-input">
-                    <button type="submit" class="btn-dark">Apply</button>
-                </form>
-
-                <a href="{{ route('cart.checkout_form') }}" class="btn-dark checkout-btn">Proceed to Checkout</a>
-            </div> --}}
             <div class="cart-summary">
                 <h2 class="summary-title">Cart Summary</h2>
 
@@ -121,7 +60,8 @@
 
                     @if (session('discount'))
                         <p>
-                            <span class="summary-label"><strong>Discount ({{ session('discount')['code'] }}):</strong></span>
+                            <span class="summary-label"><strong>Discount
+                                    ({{ session('discount')['code'] }}):</strong></span>
                             <span class="summary-value">-${{ session('discount')['value'] }}</span>
                         </p>
                     @endif
@@ -136,7 +76,7 @@
                     <p>
                         <span class="summary-label"><strong>Total After Discounts:</strong></span>
                         <span class="summary-value">
-                            ${{ $totalPrice - (session('discount')['value'] ?? 0) - ($promotion->value ?? 0) }}
+                            ${{ $totalPrice - (session('discount')['value'] ?? 0) - ($promotion->value ?? 0) - ($loyaltyPoints ?? 0) }}
                         </span>
                     </p>
                 </div>
@@ -149,29 +89,27 @@
 
                 <a href="{{ route('cart.checkout_form') }}" class="btn-dark checkout-btn">Proceed to Checkout</a>
             </div>
-
         @endif
     </div>
 
     <style>
+        .cart-summary .summary-details p {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 8px 0;
+        }
 
-.cart-summary .summary-details p {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 8px 0;
-}
+        .cart-summary .summary-label {
+            flex: 1;
+            text-align: left;
+            padding-right: 10px;
+        }
 
-.cart-summary .summary-label {
-    flex: 1;
-    text-align: left;
-    padding-right: 10px;
-}
-
-.cart-summary .summary-value {
-    flex: 0 0 100px;
-    text-align: right;
-}
+        .cart-summary .summary-value {
+            flex: 0 0 100px;
+            text-align: right;
+        }
 
         .cart-container {
             max-width: 800px;
@@ -196,7 +134,8 @@
             border-collapse: collapse;
         }
 
-        .cart-table th, .cart-table td {
+        .cart-table th,
+        .cart-table td {
             padding: 12px;
             text-align: left;
             border-bottom: 1px solid #444;

@@ -94,17 +94,47 @@
             </div>
         @endforeach
     </div>
+<style>
 
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: #ccc;
+    }
+    .form-group input,.form-group select, .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #444;
+        border-radius: 5px;
+        background: #2c2c2c;
+        color: #fff;
+        font-size: 1rem;
+    }
+    .form-group input::placeholder, .form-group textarea::placeholder {
+        color: #777;
+    }
+    .readonly-field {
+        background-color: #2c2c2c;
+        color: #aaa;
+    }
+    .form-actions {
+        text-align: center;
+        margin-top: 20px;
+    }
+</style>
     <!-- Feedback Form -->
     <form action="{{ route('feedback.store') }}" method="POST">
         @csrf
         <input type="hidden" name="order_id" value="{{ $orderId }}">
 
-        <div class="mb-3">
+        <div class="form-group">
             <label for="rating" class="form-label">Rating</label>
             <input type="number" name="rating" id="rating" class="form-control" min="1" max="5" placeholder="Rate between 1 and 5" required>
         </div>
-        <div class="mb-3">
+        <div class="form-group">
             <label for="comment" class="form-label">Comment</label>
             <textarea name="comment" id="comment" rows="4" class="form-control" placeholder="Write your feedback here..."></textarea>
         </div>

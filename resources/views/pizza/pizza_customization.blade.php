@@ -1,55 +1,4 @@
-{{-- @extends('layouts.header')
 
-
-@section('content')
-<div class="dark-theme">
-    <h1>Create Your Pizza</h1>
-    <form action="{{ route('pizza.add_to_cart') }}" method="POST">
-        @csrf
-        <div class="form-group">
-            <label for="crust">Choose Crust:</label>
-            <select name="crust_id" id="crust">
-                @foreach($crusts as $crust)
-                    <option value="{{ $crust->id }}">{{ $crust->name }} (${{ $crust->price }})</option>
-                @endforeach
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="sauce">Choose Sauce:</label>
-            <select name="sauce_id" id="sauce">
-                @foreach($sauces as $sauce)
-                    <option value="{{ $sauce->id }}">{{ $sauce->name }} (${{ $sauce->price }})</option>
-                @endforeach
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="toppings">Choose Toppings:</label>
-            @foreach($toppings as $topping)
-                <div>
-                    <input type="checkbox" name="topping_ids[]" value="{{ $topping->id }}">
-                    {{ $topping->name }} (${{ $topping->price }})
-                </div>
-            @endforeach
-        </div>
-
-
-        <label for="cheese-level">Choose Cheese Level:</label>
-<select id="cheese-level" name="cheese_level">
-    <option value="light">Light</option>
-    <option value="regular" selected>Regular</option>
-    <option value="extra">Extra</option>
-</select>
-
-
-<label for="cheese-level">Give name for your customized pizza:</label>
-<input type="text" name="name" value="Add Name For your pizza">
-
-        <button type="submit" class="btn-dark">Add to Cart</button>
-    </form>
-</div>
-@endsection --}}
 
 @extends('layouts.header')
 
@@ -159,9 +108,9 @@
         <div class="form-group">
             <label for="cheese-level" class="form-label">Cheese Level:</label>
             <select id="cheese-level" name="cheese_level" class="form-select">
-                <option value="light">Light</option>
-                <option value="regular" selected>Regular</option>
-                <option value="extra">Extra</option>
+                <option value="light">Light Cheese</option>
+                <option value="regular" selected>Regular Cheese</option>
+                <option value="extra">Extra Cheese</option>
             </select>
         </div>
 
@@ -169,14 +118,14 @@
         <div class="form-group">
             <div class="checkbox-item">
                 <input type="checkbox" id="favorite" name="favorite" value="1">
-                <label for="favorite">Mark as Favorite</label>
+                <label for="favorite">Mark as Favorite 🧀🍕</label>
             </div>
         </div>
 
         <!-- Custom Pizza Name -->
         <div class="form-group">
             <label for="pizza-name" class="form-label">Name Your Pizza:</label>
-            <input type="text" id="pizza-name" name="name" placeholder="e.g., John's Special Pizza" class="form-input">
+            <input type="text" id="pizza-name" name="name" placeholder="e.g., Vitos's Special Pizza" class="form-input">
         </div>
 
         <!-- Submit Button -->

@@ -122,10 +122,11 @@
         <nav class="navbar">
             <a href="/" class="logo">Admin Dashboard</a>
             <div class="nav-links">
-                <a href="{{route('home')}}">Home</a>
+                <a href="{{route('home')}}">Orders</a>
+                {{-- <a href="{{route('home')}}">Home</a>
 
                 <a href="{{ route('pizza.builder') }}">Pizza Builder</a>
-                <a href="{{ route('cart.view') }}">Cart</a>
+                <a href="{{ route('cart.view') }}">Cart</a> --}}
                 @if(!empty(auth()->id()))
                 <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                     @csrf

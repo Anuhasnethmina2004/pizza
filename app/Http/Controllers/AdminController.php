@@ -38,33 +38,33 @@ class AdminController extends Controller
 
 
 
-public function updateStatus(Request $request, $id)
-{
-    $cart = Cart::findOrFail($id);
+    public function updateStatus(Request $request, $id)
+    {
+        $cart = Cart::findOrFail($id);
 
-    // Map delivery_status values to state classes
-    $stateMap = [
-        \App\Constants\DeliveryStatus::PENDING => PendingState::class,
-        \App\Constants\DeliveryStatus::IN_PROGRESS => InProgressState::class,
-        \App\Constants\DeliveryStatus::OUT_FOR_DELIVERY => OutForDeliveryState::class,
-        \App\Constants\DeliveryStatus::DELIVERED => DeliveredState::class,
-    ];
+        // Map delivery_status values to state classes
+        $stateMap = [
+            \App\Constants\DeliveryStatus::PENDING => PendingState::class,
+            \App\Constants\DeliveryStatus::IN_PROGRESS => InProgressState::class,
+            \App\Constants\DeliveryStatus::OUT_FOR_DELIVERY => OutForDeliveryState::class,
+            \App\Constants\DeliveryStatus::DELIVERED => DeliveredState::class,
+        ];
 
-    // Get the current state class
-    $currentStateClass = $stateMap[$cart->delivery_status] ?? PendingState::class;
-    $currentState = new $currentStateClass();
+        // Get the current state class
+        $currentStateClass = $stateMap[$cart->delivery_status] ?? PendingState::class;
+        $currentState = new $currentStateClass();
 
-    // Create the context
-    $context = new OrderContext($currentState);
+        // Create the context
+        $context = new OrderContext($currentState);
 
-    // Transition to the selected state
-    $selectedStateClass = $stateMap[$request->input('delivery_status')] ?? null;
+        // Transition to the selected state
+        $selectedStateClass = $stateMap[$request->input('delivery_status')] ?? null;
 
-    if ($selectedStateClass) {
-        $selectedState = new $selectedStateClass();
-        $context->setState($selectedState);
-        $context->handle($cart);
-    }
+        if ($selectedStateClass) {
+            $selectedState = new $selectedStateClass();
+            $context->setState($selectedState);
+            $context->handle($cart);
+        }
 
     event(new OrderStatusUpdated($cart));
 

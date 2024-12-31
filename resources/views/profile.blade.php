@@ -2,7 +2,6 @@
 @extends('layouts.header')
 
 @section('content')
-
 <style>
     .profile-container {
         max-width: 800px;
